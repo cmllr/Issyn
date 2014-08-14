@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{2E694128-5928-47F1-BCA0-EE1B0F403A9F}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Issyn2</RootNamespace>
+    <AssemblyName>Issyn2</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="NDatabase3">
+      <HintPath>..\..\..\..\Downloads\NDatabase.3.8-mono\NDatabase3.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Downloader.cs" />
+    <Compile Include="Properties.cs" />
+    <Compile Include="Harvester.cs" />
+    <Compile Include="Index.cs" />
+    <Compile Include="Link.cs" />
+    <Compile Include="ExtractModules\IExtractModule.cs" />
+    <Compile Include="ExtractModules\CSSExtract.cs" />
+    <Compile Include="ExtractModules\ImageExtract.cs" />
+    <Compile Include="ExtractModules\LinkExtract.cs" />
+    <Compile Include="Helpers\System.cs" />
+    <Compile Include="Helpers\Output.cs" />
+    <Compile Include="Helpers\Robotstxt.cs" />
+    <Compile Include="ExtractModules\TextExtract.cs" />
+    <Compile Include="Data Access\IDataAccess.cs" />
+    <Compile Include="Data Access\NDataBase.cs" />
+    <Compile Include="Helpers\Seed.cs" />
+    <Compile Include="Helpers\Logging.cs" />
+    <Compile Include="ExtractModules\KeywordExtract.cs" />
+    <Compile Include="Helpers\Sitemapxml.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="ExtractModules\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Data Access\" />
+  </ItemGroup>
+</Project>
