@@ -32,8 +32,10 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="NDatabase3">
-      <HintPath>..\..\..\..\Downloads\NDatabase.3.8-mono\NDatabase3.dll</HintPath>
+      <HintPath>..\..\..\Downloads\NDatabase.3.8-mono\NDatabase3.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />

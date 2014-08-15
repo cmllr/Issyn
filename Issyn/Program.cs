@@ -11,7 +11,7 @@ namespace Issyn2
 	class MainClass
 	{
 		public static void Main (string[] args)
-		{
+		{		
 			/**************************setup**************************/
 			Properties.BlackList = File.ReadAllText (Path.Combine (Path.Combine (Environment.CurrentDirectory, "Data"), "BLACKLIST")).ToLower().Trim().Split(';');
 			Properties.DataAccess =  new Issyn2.NDataBaseLayer(){ConnectionString = "./test.db"};

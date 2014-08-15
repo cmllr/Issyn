@@ -25,6 +25,8 @@ namespace Issyn2
 		{
 			using (var odb = OdbFactory.Open (ConnectionString)) {
 				odb.Store (content);
+				if (Index.SiteIndex.Count(l => l.Target == content.Target) == 0)
+					Index.SiteIndex.Add(content);
 			}
 		}
 

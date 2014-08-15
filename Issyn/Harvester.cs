@@ -26,13 +26,17 @@ namespace Issyn2
 
 			//===============================Max request check===============================
 
-			if (Properties.RequestCount == Properties.MaxRequestCount) {	
+			if (Properties.RequestCount >= Properties.MaxRequestCount) {	
 				if (!Index.NextRunSeed.Contains (this.AttachedToUrl.ToString ())) {
 					//ADd only the sites to the next run seed, which are not alrady in the index
 					if (Index.SiteIndex.Count(l => l.Target == this.AttachedToUrl) == 0)
 						Index.NextRunSeed.Add (this.AttachedToUrl.ToString ());
-				}
-					
+					//add sitemap seed
+					if (Index.SitemapSeed != null) {
+						//there was a sitemap used...
+						Index.NextRunSeed.Add(string.Format("{0}://{1}",this.AttachedToUrl.Scheme,this.AttachedToUrl.Authority));
+					}
+				}					
 				return;
 			}
 			//===============================Update if already in index===============================
@@ -56,10 +60,18 @@ namespace Issyn2
 			} else {
 				//Add the site to the index
 				ProcessSite ();
-				if (Index.SiteIndex.Count(l => l.Target == this.AttachedToUrl) == 0)
-					Index.SiteIndex.Add(new Link(){Target = this.AttachedToUrl,Parent = new List<Uri>(){this.Referrer},Text = string.Empty,SiteContent=this.content,Images = this.Images});
 			}
-
+			//If crawling from the sitemap, go to the next
+			if (Properties.Mode == CrawlMode.SiteMap){
+				//Get the current site index in the sitemap seed
+				int i = (Index.SitemapSeed.IndexOf (this.AttachedToUrl.ToString()) == -1 )? 0 : Index.SitemapSeed.IndexOf (this.AttachedToUrl.ToString()) +1;				
+				//Continue crawling when there a more elements to crawl
+				if (Index.SitemapSeed.Count > i) {
+					//if (Index.SiteIndex.Count (l => l.Target == new Uri (Index.SitemapSeed [i])) == 0) {
+					Output.Print (string.Format ("[I]: Going to next page (#{0},{1}), from sitemap.", i, Index.SitemapSeed [i].ToString ()), false);
+					new Harvester (new Uri (Index.SitemapSeed [i]), this.WorkerProcessNumber, this.leaveSite, new Uri (Index.SitemapSeed [i])).StartHarvesting ();
+				}
+			}
 		}
 		private void NewSiteToIndex(string[] keywords){
 			Properties.DataAccess.StoreLink (new Link () {
@@ -88,8 +100,9 @@ namespace Issyn2
 
 				//Crawl the sites which where found
 				if (leaveSite == true || site.Authority.ToLower () == AttachedToUrl.Authority.ToLower ()) {
+					//Only crawl the child sites if the mode is enabled!
 					if (Properties.Mode == CrawlMode.Crawl)
-						new Harvester (site, this.WorkerProcessNumber, leaveSite,this.AttachedToUrl).StartHarvesting ();							
+						new Harvester (site, this.WorkerProcessNumber, leaveSite, this.AttachedToUrl).StartHarvesting ();
 				}
 			}
 		}

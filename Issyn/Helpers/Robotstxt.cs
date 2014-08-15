@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-
+using System.Linq;
 namespace Issyn2
 {
 	public class Robotstxt
@@ -23,14 +23,15 @@ namespace Issyn2
 			else {
 				string localPath = uri.LocalPath;
 				string[] matches = GetImportantRobotsPart (Properties.Robotstxt);
+				bool isAllowed = true;
 				foreach(string element in matches){
 					if (element == "" || element == string.Empty)
 					{
 						//Every bot is allowed
 						if (this.IsSiteAllowedByMeta (new Downloader ().DownloadSite (uri)))
-							return true;
+							isAllowed = true;
 						else
-							return false;
+							isAllowed = false;
 					}
 					if (element.Contains("*")){
 						//TODO: Wildcard support
@@ -38,17 +39,31 @@ namespace Issyn2
 					}
 					if (element == uri.LocalPath || uri.LocalPath.ToString().StartsWith(element)){
 							//The path is not allowed
-							return false;
-					}	
-					if (element.ToLower ().Trim ().StartsWith ("Sitemap")) {
-						//Sitemap
-						string regex = @"Sitemap:\s*(?<sitemap>.*)";
-						string sitemapUri = Regex.Match (element, regex, RegexOptions.IgnoreCase).Groups["sitemap"].Value;
-						new Sitemapxml().Parse(new Uri(sitemapUri));
+						isAllowed = false;
+						break;
+					}
+				}
+				if (matches.Count(c => c.ToLower ().Trim ().StartsWith ("sitemap")) > 0) {
+					//Sitemap
+					string regex = @"Sitemap:\s*(?<sitemap>.*)";
+					string content = matches.First (c => c.ToLower ().Trim ().StartsWith ("sitemap")).ToString();
+					string sitemapUri = Regex.Match (content, regex, RegexOptions.IgnoreCase).Groups["sitemap"].Value;
+					//Add the result to the seed!
+					List<Uri> seed = new Sitemapxml().Parse(new Downloader().DownloadSite(new Uri(sitemapUri)));
+					if (Index.SitemapSeed == null) {
+						Output.Print ("[I]: Found a sitemap. Parsing elements...", false);
+						Index.SitemapSeed = new List<string> ();
+						foreach (Uri s in seed) {
+							if (!Index.SitemapSeed.Contains (s.ToString ())) {
+								Index.SitemapSeed.Add (s.ToString ());
+							}
+						}
+					} else {
+						Output.Print ("[I]: The sitemap was already parsed!", false);
 					}
 				}
 				//if no rule applies, the site can be processed
-				return true;
+				return isAllowed;
 			}
 		}
 

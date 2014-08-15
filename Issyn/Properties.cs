@@ -22,7 +22,7 @@ namespace Issyn2
 		public static int CurrentFails = 0;
 		public static IDataAccess DataAccess ;
 		public static bool LeaveSite = false;
-		public static int MaxRequestCount = 100;
+		public static int MaxRequestCount = 5;
 		public static string[] BlackList;
 		public static  CrawlMode Mode = CrawlMode.Crawl;
 		public static bool AdditionalContentRequests = true;
