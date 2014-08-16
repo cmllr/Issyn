@@ -24,6 +24,8 @@ namespace Issyn2
 			if (RunParameters.Robotstxt == string.Empty)
 				return true;
 			else {
+				if (!RunParameters.WasSiteMapParsed)
+					ParseSiteMap (RunParameters.Robotstxt);
 				string localPath = uri.LocalPath;
 				string[] matches = GetImportantRobotsPart (RunParameters.Robotstxt);
 				bool isAllowed = true;
@@ -62,41 +64,46 @@ namespace Issyn2
 					string importantContent = robots.Substring (startIndex, endIndex - startIndex).Trim();
 					string disallowedLocalPaths = Regex.Replace(importantContent,@"Disallow:\s+","");
 					string[] paths = disallowedLocalPaths.Split ('\n');
-
 					foreach (string s in paths) {
 						string Path = s.ToLower ().Trim();
-						if (!Path.StartsWith ("crawl-delay") && !Path.StartsWith ("sitemap") && Path != string.Empty)
-							disallowed.Add (s);
-						else if (Path.StartsWith ("crawl-delay")) {
-							int delay = GetCrawlDelay (Path);
-							Properties.CrawlDelay = (delay != 0) ? delay : Properties.CrawlDelay;
-						} else if (Path.StartsWith ("sitemap")) {
-							string regex = @"Sitemap:\s*(?<sitemap>.*)";
-							string content = Path;
-							string sitemapUri = Regex.Match (content, regex, RegexOptions.IgnoreCase).Groups["sitemap"].Value;
-							//Add the result to the seed!
-							if (RunParameters.WasSiteMapParsed == false) {
-								List<Uri> seed = new Sitemapxml ().Parse (new Downloader ().DownloadSite (new Uri (sitemapUri)));
-								if (Index.SitemapSeed == null) {
-									Output.Print ("[I]: Found a sitemap. Parsing elements...", false);
-									Index.SitemapSeed = new List<string> ();
-									foreach (Uri sitemapLink in seed) {
-										if (!Index.SitemapSeed.Contains (sitemapLink.ToString ())) {
-											Index.SitemapSeed.Add (sitemapLink.ToString ());
-										}
-									}
-									Output.Print (string.Format("[I]: Sitemap has {0} entries",Index.SitemapSeed.Count), false);
-									RunParameters.WasSiteMapParsed = true;
-								}
-							}
-						}							
+						if (!Path.StartsWith ("#")) {
+							if (!Path.StartsWith ("crawl-delay") && !Path.StartsWith ("sitemap") && Path != string.Empty)
+								disallowed.Add (s);
+							else if (Path.StartsWith ("crawl-delay")) {
+								int delay = GetCrawlDelay (Path);
+								Properties.CrawlDelay = (delay != 0) ? delay : Properties.CrawlDelay;
+							}	
+						}
 					}
 						
 				}
 			}
 			return disallowed.ToArray();
 		}
-
+		/// <summary>
+		/// Triggers the inital parsing of the sitemap.
+		/// </summary>
+		/// <param name="robot">The content of the robots file.</param>
+		private void ParseSiteMap(string robot){
+			string regex = @"Sitemap:\s*(?<sitemap>.*)";
+			string content = robot;
+			string sitemapUri = Regex.Match (content, regex, RegexOptions.IgnoreCase).Groups["sitemap"].Value;
+			//Add the result to the seed!
+			if (RunParameters.WasSiteMapParsed == false) {
+				List<Uri> seed = new Sitemapxml ().Parse (new Downloader ().DownloadSite (new Uri (sitemapUri)));
+				if (Index.SitemapSeed == null) {
+					Output.Print ("[I]: Found a sitemap. Parsing elements...", false);
+					Index.SitemapSeed = new List<string> ();
+					foreach (Uri sitemapLink in seed) {
+						if (!Index.SitemapSeed.Contains (sitemapLink.ToString ())) {
+							Index.SitemapSeed.Add (sitemapLink.ToString ());
+						}
+					}
+					Output.Print (string.Format("[I]: Sitemap has {0} entries",Index.SitemapSeed.Count), false);
+					RunParameters.WasSiteMapParsed = true;
+				}
+			}
+		}
 		/// <summary>
 		/// Get The Crawl-delay value
 		/// </summary>

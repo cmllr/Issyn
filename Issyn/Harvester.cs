@@ -130,7 +130,7 @@ namespace Issyn2
 						RunParameters.DataAccess.UpdateLink (updated);
 						if (s != null) {
 							foreach (Uri backlink in s.Parent) {
-								if (backlink != this.AttachedToUrl)
+								if (backlink != this.AttachedToUrl && Properties.Mode == CrawlMode.Crawl)
 									new Harvester (backlink,this.Referrer).StartHarvesting ();
 							}
 						}

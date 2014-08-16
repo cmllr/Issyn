@@ -26,11 +26,7 @@ namespace Issyn2
 		/// <returns><c>true</c> if this instance is O the specified actual; otherwise, <c>false</c>.</returns>
 		/// <param name="actual">Actual.</param>
 		public bool IsOK(HttpStatusCode actual){
-			if (_accepted.Count (s => s == actual) == 0) {
-				return false;
-			} else {
-				return true;
-			}
+			return _accepted.Count (s => s == actual) != 0;
 		}
 	}
 }
