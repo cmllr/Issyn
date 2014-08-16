@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 namespace Issyn2
 {
+	/// <summary>
+	/// This class parses the Sitemap.xml-File, if existing.
+	/// If the crawler detects a sitemap, it will not be jump to found links anymore.
+	/// </summary>
 	public class Sitemapxml
 	{
 		public Sitemapxml ()

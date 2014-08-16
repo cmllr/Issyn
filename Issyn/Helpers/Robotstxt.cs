@@ -4,10 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 namespace Issyn2
 {
+	/// <summary>
+	/// This class parses the robots.txt and determines, if a website is allowed to be parsed.
+	/// Also, the class triggers processing of the Sitemaps.xml-File, if existing.
+	/// The crawler support Crawl-Delay
+	/// </summary>
 	public class Robotstxt
 	{	
-		public Robotstxt(){
-		}
 		/// <summary>
 		/// Determines whether this instance can be parsed the specified uri.
 		/// </summary>
@@ -15,24 +18,16 @@ namespace Issyn2
 		/// <param name="uri">URI.</param>
 		public bool CanBeParsed(Uri uri){
 					
-			if (Properties.Robotstxt == String.Empty)
-				Properties.Robotstxt = new Downloader ().DownloadSite (new Uri (string.Format ("{0}://{1}/{2}", uri.Scheme, uri.Authority, "robots.txt")));
+			if (RunParameters.Robotstxt == String.Empty)
+				RunParameters.Robotstxt = new Downloader ().DownloadSite (new Uri (string.Format ("{0}://{1}/{2}", uri.Scheme, uri.Authority, "robots.txt")));
 			//If the file could not be downloaded, shit happens		
-			if (Properties.Robotstxt == string.Empty)
+			if (RunParameters.Robotstxt == string.Empty)
 				return true;
 			else {
 				string localPath = uri.LocalPath;
-				string[] matches = GetImportantRobotsPart (Properties.Robotstxt);
+				string[] matches = GetImportantRobotsPart (RunParameters.Robotstxt);
 				bool isAllowed = true;
 				foreach(string element in matches){
-					if (element == "" || element == string.Empty)
-					{
-						//Every bot is allowed
-						if (this.IsSiteAllowedByMeta (new Downloader ().DownloadSite (uri)))
-							isAllowed = true;
-						else
-							isAllowed = false;
-					}
 					if (element.Contains("*")){
 						//TODO: Wildcard support
 
@@ -43,24 +38,9 @@ namespace Issyn2
 						break;
 					}
 				}
-				if (matches.Count(c => c.ToLower ().Trim ().StartsWith ("sitemap")) > 0) {
+				if ( matches.Count(c => c.ToLower ().Trim ().StartsWith ("sitemap")) > 0) {
 					//Sitemap
-					string regex = @"Sitemap:\s*(?<sitemap>.*)";
-					string content = matches.First (c => c.ToLower ().Trim ().StartsWith ("sitemap")).ToString();
-					string sitemapUri = Regex.Match (content, regex, RegexOptions.IgnoreCase).Groups["sitemap"].Value;
-					//Add the result to the seed!
-					List<Uri> seed = new Sitemapxml().Parse(new Downloader().DownloadSite(new Uri(sitemapUri)));
-					if (Index.SitemapSeed == null) {
-						Output.Print ("[I]: Found a sitemap. Parsing elements...", false);
-						Index.SitemapSeed = new List<string> ();
-						foreach (Uri s in seed) {
-							if (!Index.SitemapSeed.Contains (s.ToString ())) {
-								Index.SitemapSeed.Add (s.ToString ());
-							}
-						}
-					} else {
-						Output.Print ("[I]: The sitemap was already parsed!", false);
-					}
+
 				}
 				//if no rule applies, the site can be processed
 				return isAllowed;
@@ -85,33 +65,38 @@ namespace Issyn2
 
 					foreach (string s in paths) {
 						string Path = s.ToLower ().Trim();
-						if (!Path.StartsWith ("crawl-delay"))
+						if (!Path.StartsWith ("crawl-delay") && !Path.StartsWith ("sitemap") && Path != string.Empty)
 							disallowed.Add (s);
-						else {
+						else if (Path.StartsWith ("crawl-delay")) {
 							int delay = GetCrawlDelay (Path);
 							Properties.CrawlDelay = (delay != 0) ? delay : Properties.CrawlDelay;
-						}
-							
+						} else if (Path.StartsWith ("sitemap")) {
+							string regex = @"Sitemap:\s*(?<sitemap>.*)";
+							string content = Path;
+							string sitemapUri = Regex.Match (content, regex, RegexOptions.IgnoreCase).Groups["sitemap"].Value;
+							//Add the result to the seed!
+							if (RunParameters.WasSiteMapParsed == false) {
+								List<Uri> seed = new Sitemapxml ().Parse (new Downloader ().DownloadSite (new Uri (sitemapUri)));
+								if (Index.SitemapSeed == null) {
+									Output.Print ("[I]: Found a sitemap. Parsing elements...", false);
+									Index.SitemapSeed = new List<string> ();
+									foreach (Uri sitemapLink in seed) {
+										if (!Index.SitemapSeed.Contains (sitemapLink.ToString ())) {
+											Index.SitemapSeed.Add (sitemapLink.ToString ());
+										}
+									}
+									Output.Print (string.Format("[I]: Sitemap has {0} entries",Index.SitemapSeed.Count), false);
+									RunParameters.WasSiteMapParsed = true;
+								}
+							}
+						}							
 					}
 						
 				}
 			}
 			return disallowed.ToArray();
 		}
-		/// <summary>
-		/// Determines whether this instance is site allowed by meta the specified sitecontent.
-		/// </summary>
-		/// <returns><c>true</c> if this instance is site allowed by meta the specified sitecontent; otherwise, <c>false</c>.</returns>
-		/// <param name="sitecontent">Sitecontent.</param>
-		public bool IsSiteAllowedByMeta(string sitecontent){
-			string metaRegex = @"<meta\s?name=""robots""\s?content=""(?<directive>[^""]+)"">";
-			MatchCollection matches = new Regex (metaRegex, RegexOptions.IgnoreCase).Matches (sitecontent);
-			if (matches.Count == 0)
-				return false;
-			if (matches [0].Groups ["directive"].Value.ToLower() == "index" ||matches [0].Groups ["directive"].Value.ToLower() == "all" )
-				return true;
-			return false;
-		}
+
 		/// <summary>
 		/// Get The Crawl-delay value
 		/// </summary>

@@ -4,11 +4,14 @@ using System.Collections.Generic;
 
 namespace Issyn2
 {
+	/// <summary>
+	/// Extracts meta keywords from the documents
+	/// </summary>
 	public class KeywordExtract : IExtractModule
 	{
 		#region IExtractModule implementation
 
-		public string[] GetElements (string content, bool addForeign, Uri root)
+		public string[] GetElements (string content, Uri root)
 		{
 
 			string regex = @"<meta\s?name=(""|\')keywords(""|\')\s?content=(""|\')(?<keywords>[^(""|\')]+)(""|\')>";		

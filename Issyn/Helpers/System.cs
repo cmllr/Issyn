@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Issyn2
 {
@@ -39,6 +42,46 @@ namespace Issyn2
 			int lastSlash = replacement.LastIndexOf ("/") +1;
 			replacement = replacement.Remove(lastSlash, replacement.Length - lastSlash);
 			return (old.StartsWith ("./")) ? old.Replace ("./", replacement) : old;
+		}
+		/// <summary>
+		/// Gets the unique links from site.
+		/// </summary>
+		/// <returns>The unique links from site.</returns>
+		/// <param name="content">Content.</param>
+		/// <param name="root">Root.</param>
+		public static string[] GetUniqueLinksFromSite(string content,Uri root){
+			string[] linksFound = new LinkExtract().GetElements (content,root);
+			List<string> links = new List<string> ();
+			foreach (string s in linksFound) {
+				if (!links.Contains (s))
+					links.Add (s);
+			}
+			return links.ToArray ();
+		}	
+		/// <summary>
+		/// Generates an MD5-hashcode of the given string.
+		/// </summary>
+		/// <returns>The hash of the string</returns>
+		/// <param name="input">The string to be hashed.</param>
+		public static string Hash( string input)
+		{
+
+			// Convert the input string to a byte array and compute the hash.
+			byte[] data = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(input));
+
+			// Create a new Stringbuilder to collect the bytes
+			// and create a string.
+			StringBuilder sBuilder = new StringBuilder();
+
+			// Loop through each byte of the hashed data 
+			// and format each one as a hexadecimal string.
+			for (int i = 0; i < data.Length; i++)
+			{
+				sBuilder.Append(data[i].ToString("x2"));
+			}
+
+			// Return the hexadecimal string.
+			return sBuilder.ToString();
 		}
 	}
 }

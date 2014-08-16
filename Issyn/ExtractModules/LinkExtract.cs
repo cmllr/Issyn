@@ -4,11 +4,14 @@ using System.Text.RegularExpressions;
 
 namespace Issyn2
 {
+	/// <summary>
+	/// Extracts hyperlinks from the database
+	/// </summary>
 	public class LinkExtract : IExtractModule
 	{
 		#region IExtractModule implementation
 
-		public string[] GetElements (string content, bool addForeign, Uri root)
+		public string[] GetElements (string content,  Uri root)
 		{
 			List<string> links = new List<string> ();
 			string regex = @"<a.*href\s?=\s?(""|\')(?<href>[^(""|\')^#^@]+)(""|\')[^\>]*\>";
@@ -25,10 +28,12 @@ namespace Issyn2
 						}
 						Uri site = new Uri (System.AbsolutizeHref(href,root));
  						if (!links.Contains (site.ToString()) && site.ToString() != root.ToString ()) {
-							if (addForeign == true || site.Authority.ToLower () == root.Authority.ToLower () || site.Authority.ToString().StartsWith("./"))
+							if (Properties.LeaveSite == true || site.Authority.ToLower () == root.Authority.ToLower () || site.Authority.ToString().StartsWith("./"))
 								links.Add (site.ToString());
-							else
-								Index.ForeignLinks.Add(site);
+							else{
+								if (!Index.ForeignLinks.Contains(site))
+									Index.ForeignLinks.Add(site);
+							}
 						}						
 					}
 					catch (Exception ex){
@@ -38,6 +43,7 @@ namespace Issyn2
 			}
 			return links.ToArray ();
 		}
+
 		#endregion
 
 	}

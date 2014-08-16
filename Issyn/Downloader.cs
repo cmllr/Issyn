@@ -20,20 +20,25 @@ namespace Issyn2
 				WebClient downloader = new WebClient ();
 				downloader.Headers.Add(HttpRequestHeader.UserAgent,Properties.UserAgent);
 				string content = downloader.DownloadString (url);
-				Properties.RequestCount++;	
+				RunParameters.RequestCount++;	
 				int delay = new Random(DateTime.Now.Millisecond).Next(Properties.CrawlDelay,Properties.MaxCrawlDelay);
 				Thread.Sleep (delay*1000);
 				Output.Print(string.Format("[I]: Waiting {0} seconds as sheduled",delay),false);
 				return content;
 			}
 			catch(WebException wx){
-				Output.Print (string.Format("[E] request failed: {0} on {1}. Waiting 10 seconds",wx.Message,url.ToString()),true );		
-				Properties.CurrentFails++;
-				Thread.Sleep (10000);
+				HttpStatusCode result =  ((HttpWebResponse)wx.Response).StatusCode;
+				if (new Politeness (RunParameters.AcceptedErrorStatus).IsOK (result)) {
+					Output.Print (string.Format ("[E]: Request failed with {0} on {1}, but status code can be handled.", result.ToString(), url.ToString ()), true);		
+				} else {
+					Output.Print (string.Format ("[E]: request failed with {0} on {1}. Waiting 10 seconds", result.ToString(), url.ToString ()), true);		
+					RunParameters.CurrentFails++;
+					Thread.Sleep (10000);
+				}
 				return string.Empty;
 			}
 			catch (Exception ex){
-				Output.Print (string.Format("[E] {0} on {1}. Waiting 10 seconds",ex.Message,url.ToString()),true );	
+				Output.Print (string.Format("[E]: {0} on {1}. Waiting 10 seconds",ex.Message,url.ToString()),true );	
 				Thread.Sleep (10000);
 				return string.Empty;
 			}

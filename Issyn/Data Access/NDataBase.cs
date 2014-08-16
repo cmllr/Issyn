@@ -2,16 +2,19 @@
 using NDatabase;
 using System.Linq;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 
 namespace Issyn2
 {
+	/// <summary>
+	/// The implementation of the database layer for NDataBase3
+	/// </summary>
 	public class NDataBaseLayer : IDataAccess
 	{
 		string _connectionString;
 		#region IDataAccess implementation
-
-
 		public string ConnectionString {
 			get {
 				return _connectionString;
@@ -42,6 +45,8 @@ namespace Issyn2
 				toUpdate.Parent = content.Parent;
 				toUpdate.Created = content.Created;
 				toUpdate.Images = content.Images;
+				toUpdate.Checksum = content.Checksum;
+				toUpdate.SiteContent = content.SiteContent;
 				odb.Store (toUpdate);
 			}
 		}
@@ -71,6 +76,48 @@ namespace Issyn2
 				Link toReturn = odb.AsQueryable<Link> ().FirstOrDefault (l => l.Target == url);
 				return toReturn;
 			}		
+		}
+		public void NewSiteToIndex(string[] keywords,Uri target, Uri referrer,string content, string[] childs,string[] images){
+			RunParameters.DataAccess.StoreLink (new Link () {
+				Target = target,
+				Parent = new List<Uri> (){referrer },
+				Text = string.Empty,
+				Created = DateTime.Now,
+				LastSeen = DateTime.Now,
+				Keywords = keywords,
+				Childs = childs,
+				SiteContent = content,
+				Images = images,
+				Checksum = System.Hash(content),
+			});
+		}
+		public void UpdateLastSeen(Uri url){
+			Link toUpdate = RunParameters.DataAccess.GetLink (url);			
+			if (toUpdate == null)
+				return;
+			toUpdate.LastSeen = DateTime.Now;		
+			if (toUpdate != null)
+				RunParameters.DataAccess.UpdateLink (toUpdate);
+		}
+		public void AddBackLinkIfNeeded(Uri site,Uri currentUrl){
+			Link mayBeBacklink = Index.SiteIndex.FirstOrDefault (t => t.Target == site);
+
+			if (mayBeBacklink != null) {
+				if (!mayBeBacklink.Parent.Contains (currentUrl) && mayBeBacklink.Parent.Count(l => l.ToString() == currentUrl.ToString()) == 0) {
+					mayBeBacklink.Parent.Add (currentUrl);
+					new NDataBaseLayer ().UpdateLink (mayBeBacklink);
+				}
+			}
+		}
+		public bool NeedsUpdate (Uri target,string newHash)
+		{
+			Link link = GetLink (target);			
+			if (link == null)
+				return true;
+			if (newHash != link.Checksum)
+				return true;
+			else
+				return false;
 		}
 		#endregion
 	}

@@ -4,11 +4,14 @@ using System.Text.RegularExpressions;
 
 namespace Issyn2
 {
+	/// <summary>
+	/// Implementation to extract CSS-directives from the sourcecode
+	/// </summary>
 	public class CSSExtract : IExtractModule
 	{
 		#region IExtractModule implementation
 
-		public string[] GetElements (string content,bool addForeign,Uri root)
+		public string[] GetElements (string content,Uri root)
 		{
 			List<string> css = new List<string> ();
 			string regex = @"<link.*href\s?=\s?""(?<stylesheet>[^""]*)"".*type=""text/css""";
@@ -19,12 +22,12 @@ namespace Issyn2
 						string href = matches [i].Groups ["stylesheet"].Value;					
 						Uri site = new Uri (System.AbsolutizeHref(href,root));
 						if (!css.Contains (matches [i].Groups ["stylesheet"].Value) && matches [i].Groups ["stylesheet"].Value != root.ToString ()) {
-							if (addForeign == true || site.Authority.ToLower () == root.Authority.ToLower () || site.Authority.ToString().StartsWith("./"))
+							if (Properties.LeaveSite == true || site.Authority.ToLower () == root.Authority.ToLower () || site.Authority.ToString().StartsWith("./"))
 								css.Add (site.ToString());//matches [i].Groups ["href"].Value.ToLower ());
 						}
 					}
-					catch (Exception ex){
-						//The uri format is shit..
+					catch{
+						//The format is shit..
 					}
 				}
 			}

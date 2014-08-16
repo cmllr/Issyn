@@ -4,11 +4,14 @@ using System.Text.RegularExpressions;
 
 namespace Issyn2
 {
+	/// <summary>
+	/// Extracts images from the document
+	/// </summary>
 	public class ImageExtract : IExtractModule
 	{
 		#region IExtractModule implementation
 
-		public string[] GetElements (string content, bool addForeign,Uri root)
+		public string[] GetElements (string content,Uri root)
 		{
 			//NOOB-Box testen
 			List<string> images = new List<string> ();
@@ -20,7 +23,7 @@ namespace Issyn2
 						string href = matches [i].Groups ["href"].Value;					
 						Uri site = new Uri (System.AbsolutizeHref(href,root));
 						if (!images.Contains (matches [i].Groups ["href"].Value) && matches [i].Groups ["href"].Value != root.ToString ()) {
-							if (addForeign == true || site.Authority.ToLower () == root.Authority.ToLower () || site.Authority.ToString().StartsWith("./"))
+							if (Properties.LeaveSite == true || site.Authority.ToLower () == root.Authority.ToLower () || site.Authority.ToString().StartsWith("./"))
 								images.Add (site.ToString());//matches [i].Groups ["href"].Value.ToLower ());
 						}
 					}

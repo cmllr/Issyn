@@ -6,7 +6,7 @@ namespace Issyn2
 	{
 		#region IExtractModule implementation
 
-		public string[] GetElements (string content, bool addForeign, Uri root)
+		public string[] GetElements (string content,  Uri root)
 		{
 			return null;
 		}
