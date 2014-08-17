@@ -66,11 +66,13 @@ namespace Issyn2
 			//If crawling from the sitemap, go to the next
 			if (Properties.Mode == CrawlMode.SiteMap){
 				//Get the current site index in the sitemap seed
-				int i = (Index.SitemapSeed.IndexOf (this.AttachedToUrl.ToString()) == -1 )? 0 : Index.SitemapSeed.IndexOf (this.AttachedToUrl.ToString()) +1;				
-				//Continue crawling when there a more elements to crawl
-				if (Index.SitemapSeed.Count > i) {
-					//if (Index.SiteIndex.Count (l => l.Target == new Uri (Index.SitemapSeed [i])) == 0) {
-					new Harvester (new Uri (Index.SitemapSeed [i]), new Uri (Index.SitemapSeed [i])).StartHarvesting ();
+				if (Index.SitemapSeed != null) {
+					int i = (Index.SitemapSeed.IndexOf (this.AttachedToUrl.ToString ()) == -1) ? 0 : Index.SitemapSeed.IndexOf (this.AttachedToUrl.ToString ()) + 1;				
+					//Continue crawling when there a more elements to crawl
+					if (Index.SitemapSeed.Count > i) {
+						//if (Index.SiteIndex.Count (l => l.Target == new Uri (Index.SitemapSeed [i])) == 0) {
+						new Harvester (new Uri (Index.SitemapSeed [i]), new Uri (Index.SitemapSeed [i])).StartHarvesting ();
+					}
 				}
 			}
 		}
@@ -97,6 +99,14 @@ namespace Issyn2
 				Output.Print (string.Format("[E]: Site {0} was not allowed", this.AttachedToUrl),true);
 			} else {
 				Output.Print (string.Format("[I]: Moving to {0}. Mode: {1}",this.AttachedToUrl,Properties.Mode.ToString()),false);
+				if (Properties.Mode == CrawlMode.SiteMap) {
+					int currentSitemapIndex = Index.SitemapSeed.IndexOf (this.AttachedToUrl.ToString ());
+					if (currentSitemapIndex == Index.SitemapSeed.Count -1) {
+						Output.Print (string.Format("[I]: {0} was the last sitemap entry. Cleaning sitemap for next one.",this.AttachedToUrl),false);
+						Index.SitemapSeed = null;
+						RunParameters.WasSiteMapParsed = false;
+					}
+				}
 				this.content = new Downloader ().DownloadSite (this.AttachedToUrl);	
 				if (!new MetaExtract ().IsSiteAllowedByMeta (this.content,this.AttachedToUrl)) {
 					Output.Print (string.Format("[E]: Site {0} was not allowed. Denied by meta tag", this.AttachedToUrl),true);
@@ -117,7 +127,7 @@ namespace Issyn2
 				}else {
 					//Update
 					string hash = System.Hash (content);
-					if (RunParameters.DataAccess.NeedsUpdate (this.AttachedToUrl, hash)) {	
+					if ( RunParameters.DataAccess.NeedsUpdate (this.AttachedToUrl, hash)) {	
 						Output.Print (string.Format ("[I]: Site {0} is not new, but something was changed.", this.AttachedToUrl), false);
 						RunParameters.DataAccess.UpdateLastSeen (this.AttachedToUrl);
 						//TODO: Update the site

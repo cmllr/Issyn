@@ -25,7 +25,7 @@ namespace Issyn2
 				return true;
 			else {
 				if (!RunParameters.WasSiteMapParsed)
-					ParseSiteMap (RunParameters.Robotstxt);
+					ParseSitemap (RunParameters.Robotstxt);
 				if (Index.SitemapSeed == null) {
 					//try to download a sitemap
 					string sm = new Downloader ().DownloadSite (new Uri (string.Format ("{0}://{1}/{2}", uri.Scheme, uri.Authority, "sitemap.xml")));
@@ -91,36 +91,12 @@ namespace Issyn2
 						int endIndex = (i < matches.Count -1 ) ? robots.IndexOf (matches [i + 1].Value) :  robots.Length    ; 
 						string importantContent = robots.Substring (startIndex, endIndex - startIndex).Trim();
 						string disallowedLocalPaths = Regex.Replace(importantContent,@"Disallow:\s+","");
-						string[] paths = disallowedLocalPaths.Split ('\n');
-						foreach (string s in paths) {
-							string Path = s.ToLower ().Trim();
-							if (!Path.StartsWith ("#")) {
-								if (!Path.StartsWith ("crawl-delay") && !Path.StartsWith ("sitemap") && Path != string.Empty)
-									disallowed.Add (s);
-								else if (Path.StartsWith ("crawl-delay")) {
-									int delay = GetCrawlDelay (Path);
-									Properties.CrawlDelay = (delay != 0) ? delay : Properties.CrawlDelay;
-								}	
-							}
-						}
-							
+						disallowed.AddRange(GetDisallowedPathsFromString(importantContent));							
 					}
 				}
 				if (!Regex.IsMatch(robots,regexString))
 				{
-					string disallowedLocalPaths = Regex.Replace(robots,@"Disallow:\s+","");
-					string[] paths = disallowedLocalPaths.Split ('\n');
-					foreach (string s in paths) {
-						string Path = s.ToLower ().Trim();
-						if (!Path.StartsWith ("#")) {
-							if (!Path.StartsWith ("crawl-delay") && !Path.StartsWith ("sitemap") && Path != string.Empty)
-								disallowed.Add (s);
-							else if (Path.StartsWith ("crawl-delay")) {
-								int delay = GetCrawlDelay (Path);
-								Properties.CrawlDelay = (delay != 0) ? delay : Properties.CrawlDelay;
-							}	
-						}
-					}
+					disallowed.AddRange(GetDisallowedPathsFromString(robots));
 				}
 				return disallowed.ToArray();
 			}
@@ -129,10 +105,34 @@ namespace Issyn2
 			}
 		}
 		/// <summary>
+		/// Gets the disallowed paths from string.
+		/// Note: If a line contains a crawl-delay-directive, it will be set.
+		/// </summary>
+		/// <returns>The disallowed paths from string.</returns>
+		/// <param name="content">Content.</param>
+		public string[] GetDisallowedPathsFromString(string content){
+			List<string> disallowed = new List<string> ();
+			string disallowedLocalPaths = Regex.Replace(content,@"Disallow:\s+","");
+			string[] paths = disallowedLocalPaths.Split ('\n');
+			foreach (string s in paths) {
+				string Path = s.ToLower ().Trim();
+				if (!Path.StartsWith ("#")) {
+					if (!Path.StartsWith ("crawl-delay") && !Path.StartsWith ("sitemap") && Path != string.Empty)
+						disallowed.Add (s);
+					else if (Path.StartsWith ("crawl-delay")) {
+						int delay = GetCrawlDelay (Path);
+						Properties.CrawlDelay = (delay != 0) ? delay : Properties.CrawlDelay;
+						Properties.MaxCrawlDelay = Properties.MaxCrawlDelay + Properties.CrawlDelay;
+					}	
+				}
+			}
+			return disallowed.ToArray();
+		}
+		/// <summary>
 		/// Triggers the inital parsing of the sitemap.
 		/// </summary>
 		/// <param name="robot">The content of the robots file.</param>
-		private void ParseSiteMap(string robot){
+		private void ParseSitemap(string robot){
 			string regex = @"Sitemap:\s*(?<sitemap>.*)";
 			string content = robot;
 		
