@@ -41,6 +41,8 @@ namespace Issyn2
 					return false;
 				if ((index || all) && !noindex)
 					return true;
+				else if (!noindex && !all && !index)
+					return true;
 				else
 					return false;
 			}
