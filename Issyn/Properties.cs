@@ -40,7 +40,7 @@ namespace Issyn2
 		/// <summary>
 		/// The number of maxmimum requests per run
 		/// </summary>
-		public static int MaxRequestCount = 100;
+		public static int MaxRequestCount = 10;
 		/// <summary>
 		/// This string contains blacklisted words
 		/// </summary>

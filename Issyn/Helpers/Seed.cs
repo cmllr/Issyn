@@ -24,11 +24,8 @@ namespace Issyn2
 		/// </summary>
 		public void WriteSeed(){		
 			List<string> seed = new List<string>();	
-			foreach (string s in Index.NextRunSeed) {
-				if (Index.SiteIndex.Count(l => l.Target == new Uri(s)) == 0)
-					seed.Add (s);
-			}
-			Index.NextRunSeed = seed;
+			seed = Index.NextRunSeed;
+			seed = this.SeedShuffle (GetSeed ().ToList ().First());
 			File.Delete(Path.Combine(Environment.CurrentDirectory,"seedfile.txt"));
 			if (Properties.LeaveSite) {
 				string[] links = new string[Index.ForeignLinks.Count];
@@ -37,7 +34,7 @@ namespace Issyn2
 				}
 				File.WriteAllLines (Path.Combine (Environment.CurrentDirectory, "seedfile.txt"), links);
 			}
-
+			
 			File.WriteAllLines (Path.Combine (Environment.CurrentDirectory, "seedfile.txt"), seed.ToArray());			
 		}
 		/// <summary>
@@ -46,15 +43,24 @@ namespace Issyn2
 		/// <param name="currentUrl">Current URL.</param>
 		public void SaveNextRunSeed(Uri currentUrl){
 			if (!Index.NextRunSeed.Contains (currentUrl.ToString ())) {
-				//ADd only the sites to the next run seed, which are not alrady in the index
-				if (Index.SiteIndex.Count (l => l.Target == currentUrl) == 0)
-					Index.NextRunSeed.Add (currentUrl.ToString ());
 				//add sitemap seed
 				if (Index.SitemapSeed != null) {
 					//there was a sitemap used...
-					Index.NextRunSeed.Add (string.Format ("{0}://{1}", currentUrl.Scheme,currentUrl.Authority));
+					Index.NextRunSeed.Add (currentUrl.AbsoluteUri);
 				}
 			}
+		}
+		public List<string> SeedShuffle(string current){
+			List<string> newSeed = new List<string> ();
+			newSeed = Index.NextRunSeed;
+			Uri currentUri = new Uri (current);
+			string toFind = currentUri.Authority;
+			List<string> NotInCurrentSite = newSeed.Where (l => !l.Contains (toFind)).ToList();
+			List<string> InCurrent =  newSeed.Where (l => l.Contains (toFind)).ToList();
+			newSeed.Clear ();
+			newSeed.AddRange (NotInCurrentSite);
+			newSeed.AddRange (InCurrent);
+			return newSeed;
 		}
 	}
 }

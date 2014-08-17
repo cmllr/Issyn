@@ -70,7 +70,6 @@ namespace Issyn2
 				//Continue crawling when there a more elements to crawl
 				if (Index.SitemapSeed.Count > i) {
 					//if (Index.SiteIndex.Count (l => l.Target == new Uri (Index.SitemapSeed [i])) == 0) {
-					Output.Print (string.Format ("[I]: Going to next page (#{0},{1}), from sitemap.", i, Index.SitemapSeed [i].ToString ()), false);
 					new Harvester (new Uri (Index.SitemapSeed [i]), new Uri (Index.SitemapSeed [i])).StartHarvesting ();
 				}
 			}
@@ -97,7 +96,7 @@ namespace Issyn2
 			if (!isAllowed) {
 				Output.Print (string.Format("[E]: Site {0} was not allowed", this.AttachedToUrl),true);
 			} else {
-				Output.Print (string.Format("[I]: Moving to {0}",this.AttachedToUrl),false);
+				Output.Print (string.Format("[I]: Moving to {0}. Mode: {1}",this.AttachedToUrl,Properties.Mode.ToString()),false);
 				this.content = new Downloader ().DownloadSite (this.AttachedToUrl);	
 				if (!new MetaExtract ().IsSiteAllowedByMeta (this.content,this.AttachedToUrl)) {
 					Output.Print (string.Format("[E]: Site {0} was not allowed. Denied by meta tag", this.AttachedToUrl),true);

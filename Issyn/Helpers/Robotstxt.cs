@@ -26,8 +26,34 @@ namespace Issyn2
 			else {
 				if (!RunParameters.WasSiteMapParsed)
 					ParseSiteMap (RunParameters.Robotstxt);
+				if (Index.SitemapSeed == null) {
+					//try to download a sitemap
+					string sm = new Downloader ().DownloadSite (new Uri (string.Format ("{0}://{1}/{2}", uri.Scheme, uri.Authority, "sitemap.xml")));
+					if (sm != string.Empty) {
+						Output.Print ("[I]: Guessed a sitemap. Found one.", false);
+						if (RunParameters.WasSiteMapParsed == false) {
+							List<Uri> seed = new Sitemapxml ().Parse (new Downloader ().DownloadSite (new Uri (string.Format ("{0}://{1}/{2}", uri.Scheme, uri.Authority, "sitemap.xml"))));
+							if (RunParameters.WasSiteMapParsed == false) {
+								Output.Print ("[I]: Found a sitemap. Parsing elements...", false);
+								if (Index.SitemapSeed == null)
+									Index.SitemapSeed = new List<string> ();
+								foreach (Uri sitemapLink in seed) {
+									if (!Index.SitemapSeed.Contains (sitemapLink.ToString ())) {
+										Index.SitemapSeed.Add (sitemapLink.ToString ());
+									}
+								}
+								Output.Print (string.Format("[I]: Sitemap has {0} entries",Index.SitemapSeed.Count), false);
+							}
+							RunParameters.WasSiteMapParsed = true;
+						}
+					}
+				}
 				string localPath = uri.LocalPath;
 				string[] matches = GetImportantRobotsPart (RunParameters.Robotstxt);
+				if (matches.Length == 0) {
+					Output.Print (string.Format("[E]: Malformed robots file. Aborting."), true);
+					return false;
+				}
 				bool isAllowed = true;
 				foreach(string element in matches){
 					if (element.Contains("*")){
@@ -55,14 +81,34 @@ namespace Issyn2
 		/// <returns>The important robots part.</returns>
 		/// <param name="robots">Robots.</param>
 		private string[] GetImportantRobotsPart(string robots){
-			MatchCollection matches = new Regex (@"user-agent:\s+(?<useragent>.*)+", RegexOptions.IgnoreCase).Matches (robots);
-			List<String> disallowed = new List<string>();
-			for (int i = 0; i < matches.Count; i++) {
-				if (matches [i].Value.ToLower ().Contains (Properties.UserAgent.ToLower ()) || matches [i].Value.Contains ("*") ) {				
-					int startIndex = robots.IndexOf (matches [i].Value) + matches[i].Value.Length;
-					int endIndex = (i < matches.Count -1 ) ? robots.IndexOf (matches [i + 1].Value) :  robots.Length    ; 
-					string importantContent = robots.Substring (startIndex, endIndex - startIndex).Trim();
-					string disallowedLocalPaths = Regex.Replace(importantContent,@"Disallow:\s+","");
+			try{
+				string regexString = @"user-agent:\s+(?<useragent>.*)+";
+				MatchCollection matches = new Regex (regexString, RegexOptions.IgnoreCase).Matches (robots);
+				List<String> disallowed = new List<string>();
+				for (int i = 0; i < matches.Count; i++) {
+					if (matches [i].Value.ToLower ().Contains (Properties.UserAgent.ToLower ()) || matches [i].Value.Contains ("*") ) {				
+						int startIndex = robots.IndexOf (matches [i].Value) + matches[i].Value.Length;
+						int endIndex = (i < matches.Count -1 ) ? robots.IndexOf (matches [i + 1].Value) :  robots.Length    ; 
+						string importantContent = robots.Substring (startIndex, endIndex - startIndex).Trim();
+						string disallowedLocalPaths = Regex.Replace(importantContent,@"Disallow:\s+","");
+						string[] paths = disallowedLocalPaths.Split ('\n');
+						foreach (string s in paths) {
+							string Path = s.ToLower ().Trim();
+							if (!Path.StartsWith ("#")) {
+								if (!Path.StartsWith ("crawl-delay") && !Path.StartsWith ("sitemap") && Path != string.Empty)
+									disallowed.Add (s);
+								else if (Path.StartsWith ("crawl-delay")) {
+									int delay = GetCrawlDelay (Path);
+									Properties.CrawlDelay = (delay != 0) ? delay : Properties.CrawlDelay;
+								}	
+							}
+						}
+							
+					}
+				}
+				if (!Regex.IsMatch(robots,regexString))
+				{
+					string disallowedLocalPaths = Regex.Replace(robots,@"Disallow:\s+","");
 					string[] paths = disallowedLocalPaths.Split ('\n');
 					foreach (string s in paths) {
 						string Path = s.ToLower ().Trim();
@@ -75,10 +121,12 @@ namespace Issyn2
 							}	
 						}
 					}
-						
 				}
+				return disallowed.ToArray();
 			}
-			return disallowed.ToArray();
+			catch{
+				return new string[]{ };
+			}
 		}
 		/// <summary>
 		/// Triggers the inital parsing of the sitemap.
@@ -87,22 +135,29 @@ namespace Issyn2
 		private void ParseSiteMap(string robot){
 			string regex = @"Sitemap:\s*(?<sitemap>.*)";
 			string content = robot;
-			string sitemapUri = Regex.Match (content, regex, RegexOptions.IgnoreCase).Groups["sitemap"].Value;
-			//Add the result to the seed!
-			if (RunParameters.WasSiteMapParsed == false) {
-				List<Uri> seed = new Sitemapxml ().Parse (new Downloader ().DownloadSite (new Uri (sitemapUri)));
-				if (Index.SitemapSeed == null) {
-					Output.Print ("[I]: Found a sitemap. Parsing elements...", false);
-					Index.SitemapSeed = new List<string> ();
-					foreach (Uri sitemapLink in seed) {
-						if (!Index.SitemapSeed.Contains (sitemapLink.ToString ())) {
-							Index.SitemapSeed.Add (sitemapLink.ToString ());
+		
+			MatchCollection matches = Regex.Matches (content, regex, RegexOptions.IgnoreCase);
+			foreach (Match m in matches) {
+				string sitemapUri = m.Groups["sitemap"].Value;
+				//Add the result to the seed!
+				if (RunParameters.WasSiteMapParsed == false) {
+					List<Uri> seed = new Sitemapxml ().Parse (new Downloader ().DownloadSite (new Uri (sitemapUri)));
+					if (RunParameters.WasSiteMapParsed == false) {
+						Output.Print ("[I]: Found a sitemap. Parsing elements...", false);
+						if (Index.SitemapSeed == null)
+							Index.SitemapSeed = new List<string> ();
+						foreach (Uri sitemapLink in seed) {
+							if (!Index.SitemapSeed.Contains (sitemapLink.ToString ())) {
+								Index.SitemapSeed.Add (sitemapLink.ToString ());
+							}
 						}
+						Output.Print (string.Format("[I]: Sitemap has {0} entries",Index.SitemapSeed.Count), false);
 					}
-					Output.Print (string.Format("[I]: Sitemap has {0} entries",Index.SitemapSeed.Count), false);
-					RunParameters.WasSiteMapParsed = true;
 				}
 			}
+			//Set the flag only if a Sitemap was found
+			if (Regex.IsMatch(content,regex,RegexOptions.IgnoreCase))
+				RunParameters.WasSiteMapParsed = true;
 		}
 		/// <summary>
 		/// Get The Crawl-delay value

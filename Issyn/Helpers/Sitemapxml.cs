@@ -24,19 +24,25 @@ namespace Issyn2
 		/// <param name="url">URL.</param>
 		public List<Uri> Parse(string content){
 			List<Uri> urls = new List<Uri> ();
-			string regex = @"\<loc\>(?<link>[^\<]*)\</loc\>";
-			MatchCollection mc = Regex.Matches (content, regex);
-			foreach (Match element in mc) {
-				if (element.Groups ["link"].Value.EndsWith (".xml")) {
-					//Its another sitemap!
-					string newSiteMapContent = new Downloader ().DownloadSite (new Uri (element.Groups ["link"].Value));
-					urls.AddRange(Parse(newSiteMapContent));
+			try{			
+				string regex = @"\<loc\>(?<link>[^\<]*)\</loc\>";
+				MatchCollection mc = Regex.Matches (content, regex);
+				foreach (Match element in mc) {
+					if (element.Groups ["link"].Value.EndsWith (".xml")) {
+						//Its another sitemap!
+						string newSiteMapContent = new Downloader ().DownloadSite (new Uri (element.Groups ["link"].Value));
+						urls.AddRange(Parse(newSiteMapContent));
+					}
+					else{
+						urls.Add(new Uri (element.Groups ["link"].Value));
+					}
 				}
-				else{
-					urls.Add(new Uri (element.Groups ["link"].Value));
-				}
+				return urls;
 			}
-			return urls;
+			catch (Exception ex){
+				Output.Print (string.Format("[E]: Sitemap parsing failed with {0}.",ex.Message),true );	
+				return urls;
+			}
 		}
 	}
 }
