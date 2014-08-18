@@ -1,15 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Helpers/Seed.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Helpers/Robotstxt.cs">
     <Files>
-      <File FileName="Data Access/IDataAccess.cs" Line="1" Column="1" />
+      <File FileName="Data Access/IDataAccess.cs" Line="74" Column="3" />
       <File FileName="ExtractModules/CSSExtract.cs" Line="1" Column="1" />
       <File FileName="ExtractModules/MetaExtract.cs" Line="1" Column="1" />
-      <File FileName="Helpers/Robotstxt.cs" Line="1" Column="1" />
-      <File FileName="Harvester.cs" Line="1" Column="1" />
+      <File FileName="Helpers/Robotstxt.cs" Line="53" Column="31" />
+      <File FileName="Harvester.cs" Line="76" Column="6" />
       <File FileName="RunParameters.cs" Line="1" Column="1" />
-      <File FileName="Program.cs" Line="1" Column="1" />
-      <File FileName="Properties.cs" Line="1" Column="1" />
+      <File FileName="Program.cs" Line="22" Column="1" />
+      <File FileName="Properties.cs" Line="43" Column="41" />
       <File FileName="Data Access/NDataBase.cs" Line="1" Column="1" />
       <File FileName="ExtractModules/IExtractModule.cs" Line="1" Column="1" />
       <File FileName="ExtractModules/ImageExtract.cs" Line="1" Column="1" />
@@ -20,11 +20,11 @@
       <File FileName="Helpers/Logging.cs" Line="1" Column="1" />
       <File FileName="Helpers/Output.cs" Line="1" Column="1" />
       <File FileName="Helpers/Politeness.cs" Line="1" Column="1" />
-      <File FileName="Helpers/Seed.cs" Line="67" Column="1" />
+      <File FileName="Helpers/Seed.cs" Line="68" Column="1" />
       <File FileName="Helpers/Sitemapxml.cs" Line="1" Column="1" />
-      <File FileName="Helpers/System.cs" Line="1" Column="1" />
+      <File FileName="Helpers/System.cs" Line="70" Column="1" />
       <File FileName="Index.cs" Line="1" Column="1" />
-      <File FileName="Downloader.cs" Line="1" Column="1" />
+      <File FileName="Downloader.cs" Line="50" Column="23" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
@@ -35,6 +35,7 @@
       <Breakpoint file="/home/fury/Documents/GitHub/Floccus/Issyn/Data Access/MongoDB.cs" line="43" column="1" />
       <Breakpoint file="/home/fury/Documents/GitHub/Floccus/Issyn/Data Access/MongoDB.cs" line="27" column="1" />
       <Breakpoint file="/home/fury/Documents/GitHub/Floccus/Issyn/Helpers/Sitemapxml.cs" line="43" column="1" />
+      <Breakpoint file="/home/fury/Documents/GitHub/Floccus/Issyn/Helpers/Robotstxt.cs" line="159" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>

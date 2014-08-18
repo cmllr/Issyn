@@ -17,7 +17,7 @@ namespace Issyn2
 		/// <returns>The seed.</returns>
 		public string[] GetSeed(){
 			string[] file = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory,"seedfile.txt"));
-			return file;
+			return file.Where(l => l != string.Empty).ToArray();
 		}
 		/// <summary>
 		/// Writes the seed into the seedfile

@@ -50,9 +50,12 @@ namespace Issyn2
 				}
 				string localPath = uri.LocalPath;
 				string[] matches = GetImportantRobotsPart (RunParameters.Robotstxt);
-				if (matches.Length == 0) {
+				if (matches == null) {
 					Output.Print (string.Format("[E]: Malformed robots file. Aborting."), true);
 					return false;
+				}
+				if (matches.Length == 0) {
+					Output.Print (string.Format("[E]: Malformed robots file. No user-agent directives found. Assuming everything is allowed."), true);
 				}
 				bool isAllowed = true;
 				foreach(string element in matches){
@@ -81,8 +84,8 @@ namespace Issyn2
 		/// <returns>The important robots part.</returns>
 		/// <param name="robots">Robots.</param>
 		private string[] GetImportantRobotsPart(string robots){
+			string regexString = @"user-agent:\s+(?<useragent>.*)+";
 			try{
-				string regexString = @"user-agent:\s+(?<useragent>.*)+";
 				MatchCollection matches = new Regex (regexString, RegexOptions.IgnoreCase).Matches (robots);
 				List<String> disallowed = new List<string>();
 				for (int i = 0; i < matches.Count; i++) {
@@ -101,7 +104,10 @@ namespace Issyn2
 				return disallowed.ToArray();
 			}
 			catch{
-				return new string[]{ };
+				if (!Regex.IsMatch (robots, regexString))
+					return new string[]{ };
+				else
+					return null;
 			}
 		}
 		/// <summary>

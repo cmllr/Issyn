@@ -36,6 +36,12 @@
     <Reference Include="NDatabase3">
       <HintPath>..\..\..\..\Downloads\NDatabase.3.8-mono\NDatabase3.dll</HintPath>
     </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\..\..\..\Downloads\CSharpDriver-1.9.2 %282%29\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\..\..\..\Downloads\CSharpDriver-1.9.2 %282%29\MongoDB.Bson.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -62,6 +68,7 @@
     <Compile Include="RunParameters.cs" />
     <Compile Include="Helpers\Politeness.cs" />
     <Compile Include="ExtractModules\MetaExtract.cs" />
+    <Compile Include="Data Access\MongoDB.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
