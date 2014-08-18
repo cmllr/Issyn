@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Collections.Generic;
-
+using MongoDB.Bson;
 namespace Issyn2
 {
 	/// <summary>
 	/// The Link contains data about a single website
 	/// </summary>
 	public class Link
-	{
+	{	
+		public BsonObjectId _id;
 		/// <summary>
 		/// The target href of the website
 		/// </summary>

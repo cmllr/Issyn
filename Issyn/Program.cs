@@ -14,15 +14,25 @@ namespace Issyn2
 		{		
 			/**************************setup**************************/
 			Properties.BlackList = File.ReadAllText (Path.Combine (Path.Combine (Environment.CurrentDirectory, "Data"), "BLACKLIST")).ToLower().Trim().Split(';');
-			RunParameters.DataAccess =  new Issyn2.NDataBaseLayer(){ConnectionString = "./test.db"};
+			RunParameters.DataAccess = new MongoDB ();//new Issyn2.NDataBaseLayer(){ConnectionString = "./test.db"};
 			Properties.MaxCrawlDelay = 10;
 			/**************************Read the index**************************/
+		
+			//var test = new MongoDB ();
+			//foreach (Link l in results)
+			//	test.StoreLink (l);
+			//var links = new MongoDB ().GetLink(new Uri("http://0fury.de/"));
+
+
+
 			var results = RunParameters.DataAccess.GetLinks ();		
 			//Load the index from the database
+
+
+		
 			if (results != null)
 				results.ToList ().ForEach (l => Index.SiteIndex.Add (l));
-			int c = 0;
-			results.ToList ().ForEach (x => c += x.Parent.Count ());
+
 			/**************************read the seed!**************************/
 			string[] seed = new Seed ().GetSeed ();
 			Output.PrintBranding ();
