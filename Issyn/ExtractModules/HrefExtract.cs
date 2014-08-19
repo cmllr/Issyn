@@ -7,7 +7,7 @@ namespace Issyn2
 	/// <summary>
 	/// Extracts hyperlinks from the database
 	/// </summary>
-	public class HrefExtrat : IExtractModule
+	public class HrefExtract : IExtractModule
 	{
 		#region IExtractModule implementation
 

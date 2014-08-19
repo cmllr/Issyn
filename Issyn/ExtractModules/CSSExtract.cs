@@ -14,7 +14,7 @@ namespace Issyn2
 		public string[] GetElements (string content,Uri root)
 		{
 			List<string> css = new List<string> ();
-			string regex = @"<link.*href\s?=\s?""(?<stylesheet>[^""]*)"".*type=""text/css""";
+			string regex = @"<link.*href\s?=\s?(""|\')(?<stylesheet>[^(""|\')]*)(""|\').*type=(""|\')text/css(""|\')";
 			MatchCollection matches = new Regex (regex).Matches (content);
 			for (int i = 0; i < matches.Count; i++) {
 				if (matches [i].Groups ["stylesheet"].Value.Trim () != string.Empty) {

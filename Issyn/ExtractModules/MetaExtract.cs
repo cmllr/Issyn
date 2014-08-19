@@ -12,7 +12,7 @@ namespace Issyn2
 
 		public string[] GetElements (string content, Uri root)
 		{
-			string metaRegex = @"<meta\s?name=""robots""\s?content=""(?<directive>[^""]+)";
+			string metaRegex = @"<meta\s*name=(""|\')robots(""|\')\s*content=(""|\')(?<directive>[^(""|\')]+)";
 			MatchCollection matches = new Regex (metaRegex, RegexOptions.IgnoreCase).Matches (content);
 			if (matches.Count == 0)
 				return new string[]{};
@@ -21,7 +21,22 @@ namespace Issyn2
 			}
 		}
 
+
 		#endregion
+		/// <summary>
+		/// Get the day until the values will expire
+		/// </summary>
+		/// <returns>The day of expire.</returns>
+		/// <param name="content">Content of the site.</param>
+		public  DateTime GetDayOfExpire (string content)
+		{
+			string metaRegex = @"<meta\s*name\s*=\s*(""|\')expires(""|\')\s*content\s*=\s*(""|\')(?<directive>[^(""|\')]+)";
+			MatchCollection matches = new Regex (metaRegex, RegexOptions.IgnoreCase).Matches (content);
+			if (matches.Count == 0)
+				return DateTime.Now.Add (Properties.ExpiresTimeSpan);
+			else
+				return DateTime.Parse (matches [0].Groups ["directive"].Value);
+		}
 
 		/// <summary>
 		/// Determines whether this instance is site allowed by meta the specified sitecontent.

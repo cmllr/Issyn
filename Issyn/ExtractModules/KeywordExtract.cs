@@ -14,7 +14,7 @@ namespace Issyn2
 		public string[] GetElements (string content, Uri root)
 		{
 
-			string regex = @"<meta\s?name=(""|\')keywords(""|\')\s?content=(""|\')(?<keywords>[^(""|\')]+)(""|\')>";		
+			string regex = @"<meta\s*name\s*=\s*(""|\')keywords(""|\')\s*content\s*=\s*(""|\')(?<keywords>[^(""|\')]+)(""|\')>";		
 			MatchCollection matches = new Regex (regex, RegexOptions.IgnoreCase).Matches (content);
 			if (!Regex.IsMatch(content,regex))
 				return new string[0];

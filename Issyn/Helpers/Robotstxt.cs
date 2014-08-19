@@ -54,9 +54,10 @@ namespace Issyn2
 					Output.Print (string.Format("[E]: Malformed robots file. Aborting."), true);
 					return false;
 				}
-				if (matches.Length == 0) {
+				//TODO: Verbosity
+				/*if (matches.Length == 0) {
 					Output.Print (string.Format("[E]: Malformed robots file. No user-agent directives found. Assuming everything is allowed."), true);
-				}
+				}*/
 				bool isAllowed = true;
 				foreach(string element in matches){
 					if (element.Contains("*")){

@@ -50,7 +50,7 @@ namespace Issyn2
 		/// <param name="content">Content.</param>
 		/// <param name="root">Root.</param>
 		public static string[] GetUniqueLinksFromSite(string content,Uri root){
-			string[] linksFound = new LinkExtract().GetElements (content,root);
+			string[] linksFound = new HrefExtract().GetElements (content,root);
 			List<string> links = new List<string> ();
 			foreach (string s in linksFound) {
 				if (!links.Contains (s))
