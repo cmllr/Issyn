@@ -54,7 +54,6 @@
     <Compile Include="ExtractModules\IExtractModule.cs" />
     <Compile Include="ExtractModules\CSSExtract.cs" />
     <Compile Include="ExtractModules\ImageExtract.cs" />
-    <Compile Include="ExtractModules\LinkExtract.cs" />
     <Compile Include="Helpers\System.cs" />
     <Compile Include="Helpers\Output.cs" />
     <Compile Include="Helpers\Robotstxt.cs" />
@@ -69,6 +68,7 @@
     <Compile Include="Helpers\Politeness.cs" />
     <Compile Include="ExtractModules\MetaExtract.cs" />
     <Compile Include="Data Access\MongoDB.cs" />
+    <Compile Include="ExtractModules\HrefExtract.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

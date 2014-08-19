@@ -49,6 +49,10 @@ namespace Issyn2
 		/// The mode of the crawler. Will be set automatically
 		/// </summary>
 		public static  CrawlMode Mode = CrawlMode.Crawl;
+		/// <summary>
+		/// The timespan until a element will expire and needs revalidation
+		/// </summary>
+		public static TimeSpan ExpiresTimeSpan = new TimeSpan(30,0,0,0);
 	}
 }
 

@@ -77,7 +77,7 @@ namespace Issyn2
 				return toReturn;
 			}		
 		}
-		public void NewSiteToIndex(string[] keywords,Uri target, Uri referrer,string content, string[] childs,string[] images){
+		public void NewSiteToIndex(string[] keywords,Uri target, Uri referrer,string content, string[] childs,string[] images,DateTime expires){
 			RunParameters.DataAccess.StoreLink (new Link () {
 				Target = target,
 				Parent = new List<Uri> (){referrer },
@@ -89,6 +89,7 @@ namespace Issyn2
 				SiteContent = content,
 				Images = images,
 				Checksum = System.Hash(content),
+				Expires = expires
 			});
 		}
 		public void UpdateLastSeen(Uri url){

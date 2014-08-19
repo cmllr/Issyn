@@ -50,6 +50,10 @@ namespace Issyn2
 		/// The checksum of the page to identify changes.
 		/// </summary>
 		public string Checksum;
+		/// <summary>
+		/// The expire date.
+		/// </summary>
+		public DateTime Expires;
 	}
 }
 

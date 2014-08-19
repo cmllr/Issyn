@@ -122,7 +122,8 @@ namespace Issyn2
 				bool isExisting = RunParameters.DataAccess.IsStored (this.AttachedToUrl);
 				if (!isExisting) {
 					Output.Print (string.Format ("[I]: Site {0} is new, will be added to DataBase.", this.AttachedToUrl), false);
-					RunParameters.DataAccess.NewSiteToIndex(keywords,this.AttachedToUrl,this.Referrer,this.content,this.linksFound,this.Images);
+					DateTime expire = new MetaExtract ().GetDayOfExpire (content);
+					RunParameters.DataAccess.NewSiteToIndex(keywords,this.AttachedToUrl,this.Referrer,this.content,this.linksFound,this.Images,expire);
 					this.GetChildren (linksFound);
 				}else {
 					//Update

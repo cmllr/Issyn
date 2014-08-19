@@ -23,6 +23,7 @@ namespace Issyn2
 		{
 			var inx = index.GetCollection<Link>("index");
 			var result = inx.Insert (content);
+			Index.SiteIndex.Add (content);
 		}
 
 		public void UpdateLink (Link content)
@@ -68,7 +69,7 @@ namespace Issyn2
 			return (index.GetCollection<Link>("index").AsQueryable<Link>().Count(l => l.Target == url) != 0);
 		}
 
-		public void NewSiteToIndex (string[] keywords, Uri target, Uri referrer, string content, string[] childs, string[] images)
+		public void NewSiteToIndex (string[] keywords, Uri target, Uri referrer, string content, string[] childs, string[] images,DateTime expires)
 		{
 			this.StoreLink (new Link () {
 				Keywords = keywords,
@@ -77,7 +78,8 @@ namespace Issyn2
 				Childs = childs,
 				Images = images,
 				Parent = new List<Uri> (){referrer },
-				Checksum = System.Hash(content)
+				Checksum = System.Hash(content),
+				Expires = expires
 			});
 		}
 
