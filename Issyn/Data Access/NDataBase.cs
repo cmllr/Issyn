@@ -41,7 +41,7 @@ namespace Issyn2
 					return;
 				Link toUpdate  = odb.Query<Link>().Execute<Link>().Where(l => l.Target == content.Target).First();				
 				toUpdate.LastSeen = DateTime.Now;
-				toUpdate.Text = content.Text;
+				toUpdate.Title = content.Title;
 				toUpdate.Parent = content.Parent;
 				toUpdate.Created = content.Created;
 				toUpdate.Images = content.Images;
@@ -77,11 +77,11 @@ namespace Issyn2
 				return toReturn;
 			}		
 		}
-		public void NewSiteToIndex(string[] keywords,Uri target, Uri referrer,string content, string[] childs,string[] images,DateTime expires){
+		public void NewSiteToIndex(string[] keywords,Uri target, Uri referrer,string content, string[] childs,string[] images,DateTime expires, string title){
 			RunParameters.DataAccess.StoreLink (new Link () {
 				Target = target,
 				Parent = new List<Uri> (){referrer },
-				Text = string.Empty,
+				Title = title,
 				Created = DateTime.Now,
 				LastSeen = DateTime.Now,
 				Keywords = keywords,

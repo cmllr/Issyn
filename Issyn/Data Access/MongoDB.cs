@@ -33,7 +33,7 @@ namespace Issyn2
 			var inx = index.GetCollection<Link>("index");	
 			Link toUpdate = this.GetLink (content.Target);	
 			toUpdate.LastSeen = DateTime.Now;
-			toUpdate.Text = content.Text;
+			toUpdate.Title = content.Title;
 			toUpdate.Parent = content.Parent;
 			toUpdate.Created = content.Created;
 			toUpdate.Images = content.Images;
@@ -69,7 +69,7 @@ namespace Issyn2
 			return (index.GetCollection<Link>("index").AsQueryable<Link>().Count(l => l.Target == url) != 0);
 		}
 
-		public void NewSiteToIndex (string[] keywords, Uri target, Uri referrer, string content, string[] childs, string[] images,DateTime expires)
+		public void NewSiteToIndex (string[] keywords, Uri target, Uri referrer, string content, string[] childs, string[] images,DateTime expires,string title)
 		{
 			this.StoreLink (new Link () {
 				Keywords = keywords,
@@ -79,7 +79,8 @@ namespace Issyn2
 				Images = images,
 				Parent = new List<Uri> (){referrer },
 				Checksum = System.Hash(content),
-				Expires = expires
+				Expires = expires,
+				Title = title
 			});
 		}
 

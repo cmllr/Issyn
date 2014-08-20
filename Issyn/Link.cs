@@ -17,7 +17,7 @@ namespace Issyn2
 		/// <summary>
 		/// The link text
 		/// </summary>
-		public String Text;
+		public String Title;
 		/// <summary>
 		/// A collection of links which are reffering to the link
 		/// </summary>

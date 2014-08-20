@@ -54,7 +54,8 @@ namespace Issyn2
 		/// <param name="childs">The hyperlinks to other pages which are contained in the current site.</param>
 		/// <param name="images">The images which are linked in.</param>
 		/// <param name="expires">The day when the link will expire</param>
-		void NewSiteToIndex(string[] keywords,Uri target, Uri referrer,string content, string[] childs,string[] images,DateTime expires);
+		/// <param name="title">The title</param>
+		void NewSiteToIndex(string[] keywords,Uri target, Uri referrer,string content, string[] childs,string[] images,DateTime expires,string title);
 		/// <summary>
 		/// Updates the last seen.
 		/// </summary>

@@ -123,7 +123,8 @@ namespace Issyn2
 				if (!isExisting) {
 					Output.Print (string.Format ("[I]: Site {0} is new, will be added to DataBase.", this.AttachedToUrl), false);
 					DateTime expire = new MetaExtract ().GetDayOfExpire (content);
-					RunParameters.DataAccess.NewSiteToIndex(keywords,this.AttachedToUrl,this.Referrer,this.content,this.linksFound,this.Images,expire);
+					string title = new MetaExtract ().GetTitle (content, this.AttachedToUrl);
+					RunParameters.DataAccess.NewSiteToIndex(keywords,this.AttachedToUrl,this.Referrer,this.content,this.linksFound,this.Images,expire,title);
 					this.GetChildren (linksFound);
 				}else {
 					//Update

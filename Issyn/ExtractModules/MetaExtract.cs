@@ -37,6 +37,20 @@ namespace Issyn2
 			else
 				return DateTime.Parse (matches [0].Groups ["directive"].Value);
 		}
+		/// <summary>
+		/// Gets the title from a given content.
+		/// </summary>
+		/// <returns>The title.</returns>
+		/// <param name="content">Content.</param>
+		/// <param name="url">URL.</param>
+		public string GetTitle(string content,Uri url){
+			string regex = @"<\s*title\s*>(?<title>.*)<\s*/\s*title\s*>";
+			if (!Regex.IsMatch (content, regex)) {
+				return url.ToString ();
+			} else {
+				return Regex.Match (content, regex).Groups ["title"].Value;
+			}
+		}
 
 		/// <summary>
 		/// Determines whether this instance is site allowed by meta the specified sitecontent.
