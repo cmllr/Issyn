@@ -125,7 +125,7 @@ namespace Issyn2
 					DateTime expire = new MetaExtract ().GetDayOfExpire (content);
 					string title = new MetaExtract ().GetTitle (content, this.AttachedToUrl);
 					if (keywords.Length == 0)
-						keywords = new KeywordExtract ().GetBodyKeywords (content);
+						keywords = new KeywordExtract ().GetBodyKeywords (content,AttachedToUrl);
 					RunParameters.DataAccess.NewSiteToIndex(keywords,this.AttachedToUrl,this.Referrer,this.content,this.linksFound,this.Images,expire,title);
 					this.GetChildren (linksFound);
 				}else {

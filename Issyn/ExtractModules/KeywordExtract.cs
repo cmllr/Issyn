@@ -22,15 +22,26 @@ namespace Issyn2
 			string[] words = keywords.Split (',');
 			return words;
 		}
-		public string[] GetBodyKeywords(string content){
+		public string[] GetBodyKeywords(string content,Uri url){
 			List<string> keywords = new List<string> ();
 			string[] values = content.Split (' ');
 			foreach (string s in values) {
-				if (!s.Contains ("<") && !s.Contains (">") && !IsHTMLTag(s) && !keywords.Contains(s)) {
+				if (!s.Contains ("<") && !s.Contains (">") && !IsHTMLTag(s) && !keywords.Contains(s) && !IsKeyWordCommon(s,url)) {
 					keywords.Add (s);
 				}
 			}
 			return keywords.ToArray();
+		}
+		private bool IsKeyWordCommon(string value,Uri url){
+			Link linksWithSameUrl = Index.SiteIndex.FirstOrDefault(l => l.Target.Authority == url.Authority);
+			if (linksWithSameUrl == null)
+				return false;
+			else {
+				if (linksWithSameUrl.Keywords.Contains (value))
+					return true;
+				else
+					return false;
+			}
 		}
 		private bool IsHTMLTag(string value){
 			return Regex.IsMatch(value,@"\w+\s*=\s*(""|')");
