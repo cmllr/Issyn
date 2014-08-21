@@ -83,6 +83,14 @@ namespace Issyn2
 			// Return the hexadecimal string.
 			return sBuilder.ToString();
 		}
+		/// <summary>
+		/// Check if a link should be reparsed.
+		/// </summary>
+		/// <returns><c>true</c> if this instance is link expired the specified l; otherwise, <c>false</c>.</returns>
+		/// <param name="l">L.</param>
+		public static bool IsLinkExpired(Link l){
+			return (l.Expires >= DateTime.Now);
+		}
 	}
 }
 

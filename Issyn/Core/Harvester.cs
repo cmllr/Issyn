@@ -86,7 +86,7 @@ namespace Issyn2
 				//Crawl the sites which where found
 				if (Properties.LeaveSite == true || site.Authority.ToLower () == AttachedToUrl.Authority.ToLower ()) {
 					//Only crawl the child sites if the mode is enabled!
-					if (Properties.Mode == CrawlMode.Crawl && new string[]{"html","htm","php","/","aspx","asp","#"}.Count(l => site.ToString().EndsWith(l)) == 1)
+					if (Properties.Mode == CrawlMode.Crawl && RunParameters.Crawlable.Count(l => site.ToString().EndsWith(l)) == 1 && !Properties.NoChildCrawl)
 						new Harvester (site, this.AttachedToUrl).StartHarvesting ();
 				}
 			}
@@ -124,6 +124,8 @@ namespace Issyn2
 					Output.Print (string.Format ("[I]: Site {0} is new, will be added to DataBase.", this.AttachedToUrl), false);
 					DateTime expire = new MetaExtract ().GetDayOfExpire (content);
 					string title = new MetaExtract ().GetTitle (content, this.AttachedToUrl);
+					if (keywords.Length == 0)
+						keywords = new KeywordExtract ().GetBodyKeywords (content);
 					RunParameters.DataAccess.NewSiteToIndex(keywords,this.AttachedToUrl,this.Referrer,this.content,this.linksFound,this.Images,expire,title);
 					this.GetChildren (linksFound);
 				}else {

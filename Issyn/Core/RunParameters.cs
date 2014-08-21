@@ -12,6 +12,8 @@ namespace Issyn2
 		public static int CurrentFails = 0;
 		public static IDataAccess DataAccess ;
 		public static HttpStatusCode[] AcceptedErrorStatus = new HttpStatusCode[]{HttpStatusCode.Continue,HttpStatusCode.Found,HttpStatusCode.Moved,HttpStatusCode.MovedPermanently,HttpStatusCode.NotFound};
+		public static string[] Crawlable = new string[]{"html","htm","php","/","aspx","asp","#"};
+	
 	}
 }
 

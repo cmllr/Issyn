@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-
+using System.Linq;
 namespace Issyn2
 {
 	/// <summary>
@@ -22,8 +22,19 @@ namespace Issyn2
 			string[] words = keywords.Split (',');
 			return words;
 		}
-
-
+		public string[] GetBodyKeywords(string content){
+			List<string> keywords = new List<string> ();
+			string[] values = content.Split (' ');
+			foreach (string s in values) {
+				if (!s.Contains ("<") && !s.Contains (">") && !IsHTMLTag(s) && !keywords.Contains(s)) {
+					keywords.Add (s);
+				}
+			}
+			return keywords.ToArray();
+		}
+		private bool IsHTMLTag(string value){
+			return Regex.IsMatch(value,@"\w+\s*=\s*(""|')");
+		}
 		#endregion
 
 

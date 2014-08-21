@@ -53,6 +53,10 @@ namespace Issyn2
 		/// The timespan until a element will expire and needs revalidation
 		/// </summary>
 		public static TimeSpan ExpiresTimeSpan = new TimeSpan(30,0,0,0);
+		/// <summary>
+		/// Determines if the childs of a site should be parsed.
+		/// </summary>
+		public static bool NoChildCrawl = false;
 	}
 }
 
