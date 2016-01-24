@@ -12,7 +12,12 @@ import java.net.URL;
  */
 class Downloader {
     public static int DownloadsDone = 0;
+    public static int NotProcessed = 0;
     public static String DownloadSite(URL target){
+        if (Hypervisor.MAXREQUESTS != -1 && DownloadsDone >= Hypervisor.MAXREQUESTS){
+            NotProcessed++;
+            return "";
+        }
         String content = "";
         URL url;
         InputStream is = null;

@@ -14,12 +14,7 @@ import java.util.regex.Pattern;
 class Crawler {
     private URL target;
     public Crawler(URL target){
-        this.Start();
         this.target = target;
-    }
-    public void Start(){
-        System.setProperty("http.agent","Mozilla/5.0 (compatible; Issyn2/0)");
-        System.out.println(String.format("Starting Issyn (%s)...",System.getProperty("http.agent")));
     }
     public Index Crawl() throws MalformedURLException {
         String content = Downloader.DownloadSite(this.target);
@@ -32,7 +27,7 @@ class Crawler {
         System.out.println(String.format("Found %s Hyperlinks hosted on  %s",ownHyperlinks.length,this.target));
         Map<String,String> meta = this.ExtractMetaTags(content);
         String[] js = this.ExtractJSFrameworks(content);
-        return new Index(target,ownHyperlinks,meta,this.ExtractCMS(meta),this.ExtractKeywords(meta),js);
+        return new Index(target,ownHyperlinks,meta,this.ExtractCMS(meta),this.ExtractKeywords(meta),js,this.GetTitle(content));
     }
     private String[] ExtractHyperlinks(String content){
         Pattern href = Pattern.compile("<\\s{0,}a.{0,}href\\s{0,}=\\s{0,}(\"|')(?<href>[^(\"|')]+)(\"|')",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
@@ -99,5 +94,13 @@ class Crawler {
             matches.add(script);
         }
         return matches.toArray(new String[]{});
+    }
+    private String GetTitle(String content){
+        Pattern title = Pattern.compile("<\\s{0,}title\\s{0,}>(?<title>[^\\<]*)",Pattern.CASE_INSENSITIVE);
+        Matcher m = title.matcher(content);
+        while(m.find()){
+            return m.group("title");
+        }
+        return "";
     }
 }

@@ -9,6 +9,7 @@ import java.util.Map;
  */
 public class Index {
     public URL Page;
+    public String Title;
     public String[] Hyperlinks;
     public Map<String,String> Meta;
     public String[] JS;
@@ -16,7 +17,7 @@ public class Index {
     public String CMS;
     public Date Indexed;
     public Date LastIndexed;
-    public Index(URL page, String[] hyperlinks,Map<String,String> meta,String cms,String[] keywords,String[] js){
+    public Index(URL page, String[] hyperlinks,Map<String,String> meta,String cms,String[] keywords,String[] js,String title){
         this.Page = page;
         this.Hyperlinks = hyperlinks;
         this.Meta = meta;
@@ -25,5 +26,6 @@ public class Index {
         this.JS = js;
         this.Indexed = new Date();
         this.LastIndexed = this.Indexed;
+        this.Title = title;
     }
 }
