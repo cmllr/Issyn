@@ -31,7 +31,8 @@ class Crawler {
         String[] ownHyperlinks = this.ExtractOwnHyperlinks(allHyperlinks);
         System.out.println(String.format("Found %s Hyperlinks hosted on  %s",ownHyperlinks.length,this.target));
         Map<String,String> meta = this.ExtractMetaTags(content);
-        return new Index(target,ownHyperlinks,meta,this.ExtractCMS(meta),this.ExtractKeywords(meta));
+        String[] js = this.ExtractJSFrameworks(content);
+        return new Index(target,ownHyperlinks,meta,this.ExtractCMS(meta),this.ExtractKeywords(meta),js);
     }
     private String[] ExtractHyperlinks(String content){
         Pattern href = Pattern.compile("<\\s{0,}a.{0,}href\\s{0,}=\\s{0,}(\"|')(?<href>[^(\"|')]+)(\"|')",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
@@ -88,5 +89,15 @@ class Crawler {
             }
         }
         return new String[]{};
+    }
+    private String[] ExtractJSFrameworks(String content){
+        List<String> matches = new ArrayList();
+        Pattern meta = Pattern.compile("<\\s{0,}script.{0,}src\\s{0,}=\\s{0,}(\\\"|')(?<script>[^(\\\"|')]+)(\\\"|')",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE );
+        Matcher m = meta.matcher(content);
+        while(m.find()){
+            String script = m.group("script");
+            matches.add(script);
+        }
+        return matches.toArray(new String[]{});
     }
 }

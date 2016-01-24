@@ -11,6 +11,7 @@ import java.net.URL;
  * Created by fury on 24.01.2016.
  */
 class Downloader {
+    public static int DownloadsDone = 0;
     public static String DownloadSite(URL target){
         String content = "";
         URL url;
@@ -36,6 +37,7 @@ class Downloader {
                 // nothing to see here
             }
         }
+        Downloader.DownloadsDone++;
         return content;
     }
 }
