@@ -17,13 +17,15 @@ public class Index {
     public String CMS;
     public Date Indexed;
     public Date LastIndexed;
-    public Index(URL page, String[] hyperlinks,Map<String,String> meta,String cms,String[] keywords,String[] js,String title){
+    public URL Parent;
+    public Index(URL page, String[] hyperlinks,Map<String,String> meta,String cms,String[] keywords,String[] js,String title,URL parent){
         this.Page = page;
         this.Hyperlinks = hyperlinks;
         this.Meta = meta;
         this.CMS = cms;
         this.Keywords = keywords;
         this.JS = js;
+        this.Parent = parent;
         this.Indexed = new Date();
         this.LastIndexed = this.Indexed;
         this.Title = title;

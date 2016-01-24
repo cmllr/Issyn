@@ -14,6 +14,9 @@ public class Main {
         Hypervisor h = new Hypervisor();
         h.Start();
         //TODO: Load indezes. Each site has is own collection
-        h.Run(h.ReadSeed());
+        h.Run(h.ReadSeed(),null);
+        System.out.println(String.format("Created %s requests.",Downloader.DownloadsDone));
+        System.out.println(String.format("Index has now %s entries.",Hypervisor.indizes.length));
+        System.out.println(String.format("%s entries not processed. Pushing back to seed.",Downloader.NotProcessed));
     }
 }

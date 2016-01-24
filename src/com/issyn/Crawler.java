@@ -16,18 +16,40 @@ class Crawler {
     public Crawler(URL target){
         this.target = target;
     }
-    public Index Crawl() throws MalformedURLException {
+    public Index GetIndex(URL target){
+        if (Hypervisor.indizes == null)
+        {
+            return null;
+        }
+        for(int i = 0; i < Hypervisor.indizes.length;i++){
+            if (Hypervisor.indizes[i].Page.equals(target)){
+                return Hypervisor.indizes[i];
+            }
+        }
+        return null;
+    }
+    public Index Crawl(URL parent) throws MalformedURLException {
+        if (this.GetIndex(this.target) != null) {
+            System.out.println(String.format("Site %s is already in index. Aborting download!",this.target));
+            return this.GetIndex(this.target);
+        }
+        if (!this.IsCrawable(this.target)){
+            return null;
+        }
         String content = Downloader.DownloadSite(this.target);
         if (content.equals("")){
             return null;
         }
         String[] allHyperlinks = this.ExtractHyperlinks(content);
-        System.out.println(String.format("Found %s Hyperlinks on %s",allHyperlinks.length,this.target));
         String[] ownHyperlinks = this.ExtractOwnHyperlinks(allHyperlinks);
-        System.out.println(String.format("Found %s Hyperlinks hosted on  %s",ownHyperlinks.length,this.target));
+        System.out.println(String.format("Found %s Hyperlinks hosted on %s",ownHyperlinks.length,this.target));
         Map<String,String> meta = this.ExtractMetaTags(content);
         String[] js = this.ExtractJSFrameworks(content);
-        return new Index(target,ownHyperlinks,meta,this.ExtractCMS(meta),this.ExtractKeywords(meta),js,this.GetTitle(content));
+        return new Index(target,ownHyperlinks,meta,this.ExtractCMS(meta),this.ExtractKeywords(meta),js,this.GetTitle(content),parent);
+    }
+    private Boolean IsCrawable(URL target){
+        //TODO: Better solution
+        return !target.toString().endsWith("png");
     }
     private String[] ExtractHyperlinks(String content){
         Pattern href = Pattern.compile("<\\s{0,}a.{0,}href\\s{0,}=\\s{0,}(\"|')(?<href>[^(\"|')]+)(\"|')",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
