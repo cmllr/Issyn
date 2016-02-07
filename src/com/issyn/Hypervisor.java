@@ -9,7 +9,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by fury on 24.01.2016.
@@ -17,8 +19,10 @@ import java.util.List;
 public class Hypervisor {
     public static Index[] indizes = null;
     public static int MAXREQUESTS = -1;
+    public static final String USERAGENT = "Mozilla/5.0 (compatible; Issyn2/0)";
+    public static Map<String,List<String>> RobotsFiles;
     public void Start(){
-        System.setProperty("http.agent","Mozilla/5.0 (compatible; Issyn2/0)");
+        System.setProperty("http.agent",Hypervisor.USERAGENT);
         System.out.println(String.format("Starting Issyn (%s)...",System.getProperty("http.agent")));
     }
     public void Run(String[] seed,URL parent) throws MalformedURLException, InterruptedException {

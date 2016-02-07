@@ -51,9 +51,6 @@ class Crawler {
         return !target.toString().endsWith("png") &&
                 !target.toString().endsWith(".js");
     }
-    private Boolean IsRobotsAllowed(String Robots){
-        return false;
-    }
     private String[] ExtractHyperlinks(String content){
         Pattern href = Pattern.compile("<\\s{0,}a.{0,}href\\s{0,}=\\s{0,}(\"|')(?<href>[^(\"|')]+)(\"|')",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
         Matcher m = href.matcher(content);
