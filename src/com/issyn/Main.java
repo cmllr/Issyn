@@ -1,5 +1,6 @@
 package com.issyn;
 
+import com.issyn.Data.DataBase;
 import com.issyn.Data.Index;
 
 import java.net.MalformedURLException;
@@ -13,10 +14,9 @@ public class Main {
     public static void main(String[] args) throws MalformedURLException, InterruptedException {
         Hypervisor h = new Hypervisor();
         h.Start();
-        //TODO: Load indezes. Each site has is own collection
         h.Run(h.ReadSeed(),null);
+        h.WriteSeed();
         System.out.println(String.format("Created %s requests.",Downloader.DownloadsDone));
-        System.out.println(String.format("Index has now %s entries.",Hypervisor.indizes.length));
-        System.out.println(String.format("%s entries not processed. Pushing back to seed.",Downloader.NotProcessed));
+        System.out.println(String.format("%s entries not processed. Pushing back to seed.",Downloader.NotProcessed != null ? Downloader.NotProcessed.size() : 0));
     }
 }

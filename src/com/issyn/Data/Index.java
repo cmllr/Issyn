@@ -18,7 +18,8 @@ public class Index {
     public Date Indexed;
     public Date LastIndexed;
     public URL Parent;
-    public Index(URL page, String[] hyperlinks,Map<String,String> meta,String cms,String[] keywords,String[] js,String title,URL parent){
+    public String Raw;
+    public Index(URL page, String[] hyperlinks,Map<String,String> meta,String cms,String[] keywords,String[] js,String title,URL parent,String raw){
         this.Page = page;
         this.Hyperlinks = hyperlinks;
         this.Meta = meta;
@@ -29,5 +30,6 @@ public class Index {
         this.Indexed = new Date();
         this.LastIndexed = this.Indexed;
         this.Title = title;
+        this.Raw = raw;
     }
 }

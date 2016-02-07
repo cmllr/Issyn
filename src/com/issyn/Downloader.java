@@ -1,25 +1,28 @@
 package com.issyn;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by fury on 24.01.2016.
  */
 class Downloader {
     public static int DownloadsDone = 0;
-    public static int NotProcessed = 0;
+    public static List<URL> NotProcessed;
     public static String DownloadSite(URL target){
         if (Hypervisor.MAXREQUESTS != -1 && DownloadsDone >= Hypervisor.MAXREQUESTS){
-            NotProcessed++;
+            if ( Downloader.NotProcessed ==null){
+                Downloader.NotProcessed = new ArrayList<>();
+            }
+            if (!Downloader.NotProcessed.contains(target)){
+                NotProcessed.add(NotProcessed.size(),target);
+            }
             return "";
         }
         String content = "";
-        URL url;
         InputStream is = null;
         BufferedReader br;
         String line;
@@ -33,16 +36,18 @@ class Downloader {
             }
         } catch (MalformedURLException mue) {
             mue.printStackTrace();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        } catch (FileNotFoundException fe){
+            //Do nothing. Its 404.
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException ioe) {
                 // nothing to see here
             }
+            Downloader.DownloadsDone++;
         }
-        Downloader.DownloadsDone++;
         return content;
     }
 }

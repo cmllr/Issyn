@@ -30,7 +30,6 @@ class Crawler {
     }
     public Index Crawl(URL parent) throws MalformedURLException {
         if (this.GetIndex(this.target) != null) {
-            System.out.println(String.format("Site %s is already in index. Aborting download!",this.target));
             return this.GetIndex(this.target);
         }
         if (!this.IsCrawable(this.target)){
@@ -45,11 +44,15 @@ class Crawler {
         System.out.println(String.format("Found %s Hyperlinks hosted on %s",ownHyperlinks.length,this.target));
         Map<String,String> meta = this.ExtractMetaTags(content);
         String[] js = this.ExtractJSFrameworks(content);
-        return new Index(target,ownHyperlinks,meta,this.ExtractCMS(meta),this.ExtractKeywords(meta),js,this.GetTitle(content),parent);
+        return new Index(target,ownHyperlinks,meta,this.ExtractCMS(meta),this.ExtractKeywords(meta),js,this.GetTitle(content),parent,content);
     }
     private Boolean IsCrawable(URL target){
         //TODO: Better solution
-        return !target.toString().endsWith("png");
+        return !target.toString().endsWith("png") &&
+                !target.toString().endsWith(".js");
+    }
+    private Boolean IsRobotsAllowed(String Robots){
+        return false;
     }
     private String[] ExtractHyperlinks(String content){
         Pattern href = Pattern.compile("<\\s{0,}a.{0,}href\\s{0,}=\\s{0,}(\"|')(?<href>[^(\"|')]+)(\"|')",Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
@@ -57,7 +60,7 @@ class Crawler {
         List<String> matches = new ArrayList();
         while(m.find()){
             String match = m.group("href");
-            if (!matches.contains(match) && !match.endsWith("#") && !match.contains("#")){
+            if (!matches.contains(match) && !match.endsWith("#") && !match.contains("#") ){
                 matches.add(matches.size(),match);
             }
         }
@@ -65,18 +68,27 @@ class Crawler {
     }
     private String[] ExtractOwnHyperlinks(String[] all) throws  MalformedURLException{
         List<String> matches = new ArrayList();
-        for(int i = 0; i < all.length;i++){
+        for(int i = 0; i < all.length;i++) {
             URL current = null;
-            try{
-                current = new URL(all[i]);
-            }
-            catch (MalformedURLException ex){
-                current = new URL(target,all[i].replace("./",""));
-            }
-            //either same host or subdomain
-            if (target.getHost().equals(current.getHost()) || current.getHost().contains(target.getHost())){
-                matches.add(current.toString());
-            }
+
+                try {
+                    current = new URL(all[i]);
+                } catch (MalformedURLException ex) {
+                    try{
+                        current = new URL(target, all[i].replace("./", ""));
+                    }
+                    catch(MalformedURLException mex){
+                        //Cannot parse
+                    }
+                }
+                //either same host or subdomain
+                try{
+                    if (current != null && target.getHost().equals(current.getHost()) || current.getHost().contains(target.getHost())) {
+                        matches.add(current.toString());
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
         }
         return matches.toArray(new String[]{});
     }
