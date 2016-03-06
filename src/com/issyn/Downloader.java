@@ -1,8 +1,10 @@
 package com.issyn;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +67,7 @@ class Downloader {
                 Hypervisor.RobotsFiles.put(host,disallowed);
             }
             catch(Exception ex){
-
+                ex.printStackTrace();
             }
         }
         List<String> disallowedURI = Hypervisor.RobotsFiles.get(host);
@@ -84,7 +86,16 @@ class Downloader {
         String line;
 
         try {
-            is = target.openStream();  // throws an IOException
+            URLConnection foo = target.openConnection();
+            HttpURLConnection conn = (HttpURLConnection)foo;
+            conn.setInstanceFollowRedirects(true);  //you still need to handle redirect manully.
+            HttpURLConnection.setFollowRedirects(true);
+            conn.addRequestProperty("User-Agent", Hypervisor.USERAGENT);
+            conn.addRequestProperty("Referer", "google.com");
+
+            is = foo.getInputStream();
+          //  is = target.openStream();  // throws an IOException
+
             br = new BufferedReader(new InputStreamReader(is));
 
             while ((line = br.readLine()) != null) {

@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class Hypervisor {
     public static Index[] indizes = null;
-    public static int MAXREQUESTS = -1;
+    public static int MAXREQUESTS = 20;
     public static final String USERAGENT = "Mozilla/5.0 (compatible; Issyn2/0)";
     public static Map<String,List<String>> RobotsFiles;
     public void Start(){
