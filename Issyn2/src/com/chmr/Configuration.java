@@ -5,9 +5,12 @@ package com.chmr;
  */
 public class Configuration {
     public static int MAXDEPTH = 10;
+    public static int CURRENTDEPTH = 1;
     public static int MAXREQUESTS = 5;
+    public static int CURRENTREQUESTS = 0;
     public static int DOWNLOADDELAY = 20;
     public static String USERAGENT = "Mozilla/5.0 (compatible; Issyn2/0)";
     public static Boolean IsVerbose = true;
+    public static String HOST = "web.fritz.box";
 
 }

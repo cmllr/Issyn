@@ -2,6 +2,7 @@ package com.chmr;
 
 
 import com.chmr.Interfaces.IExtractor;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -60,20 +61,32 @@ public class Hypervisor {
         }
         return content;
     }
-    public Boolean Run() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-
+    public Boolean Run() throws ClassNotFoundException, IllegalAccessException, InstantiationException, MalformedURLException {
         String content = this.Download(this.target);
         Output(String.format("Grabbed %s => %s chars",this.target,content.length()));
-        String[] extractors = new String[]{"MetaExtractor"};
+        String[] extractors = new String[]{"MetaExtractor","CMSExtractor","HrefExtractor"};
+        Output(String.format("Current Depth: %s",Configuration.CURRENTDEPTH));
         for(String extractor: extractors){
             Output(String.format("Running extractor \"%s\"",extractor));
             Class<?> clazz = Class.forName("com.chmr.Extractors."+extractor);
             IExtractor ext = (IExtractor) clazz.newInstance();
-            Map<String,String> got = ext.Extract(content);
-            Output(String.format("Extractor \"%s\" found %s key value pairs",extractor,got.size()));
+            Map<String,String> got = ext.Extract(content,this.target);
+            Output(String.format("Extractor \"%s\" found %s key value pairs",extractor,(got != null) ? got.size() : 0));
             Boolean save = ext.Store(got);
             Output(String.format("Extractor \"%s\" saved results: %s",extractor,(save) ? "yes" : "no"),!save);
-            int x=0;
+            int baseDepth = Configuration.CURRENTDEPTH;
+            if (ext.IsResultCrawlable()){
+                for(Map.Entry<String,String> tuple :  got.entrySet()){
+                    Configuration.CURRENTDEPTH++;
+                    if (Configuration.CURRENTDEPTH >= Configuration.MAXDEPTH){
+                        Output("Depth to deep. for " + tuple.getValue());
+                    }else{
+                        Hypervisor sub = new Hypervisor(new URL(tuple.getValue()));
+                        sub.Run();
+                    }
+                    Configuration.CURRENTDEPTH = baseDepth;
+                }
+            }
         }
 
         return false;
